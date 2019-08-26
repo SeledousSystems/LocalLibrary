@@ -16,7 +16,10 @@ var app = express();
 
 // Set up mongoose connection
 var mongoose = require('mongoose');
-var mongoDB = 'mongodb+srv://Username:Password@cluster0-bvfnj.mongodb.net/test?retryWrites=true"&"w=majority';
+
+// Set up mongoose connection
+var dev_db_url = 'mongodb+srv://Username:Password@cluster0-bvfnj.mongodb.net/test?retryWrites=true"&"w=majority';
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 //var mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, {

@@ -5,10 +5,10 @@ var BookInstance = require('../models/bookinstance');
 const {
     body,
     validationResult
-} = require('express-validator/check');
+} = require('express-validator');
 const {
     sanitizeBody
-} = require('express-validator/filter');
+} = require('express-validator');
 
 var async = require('async');
 
@@ -248,13 +248,41 @@ exports.book_delete_get = function (req, res) {
 
 // Handle book delete on POST.
 exports.book_delete_post = function (req, res) {
-    // Assume valid BookInstance id in field.
-    Book.findByIdAndDelete(req.body.id, function deleteBook(err) {
+    // Assume the post has valid id (ie no validation/sanitization).
+
+    async.parallel({
+        book: function (callback) {
+            Book.findById(req.body.id).populate('author').populate('genre').exec(callback);
+        },
+        book_bookinstances: function (callback) {
+            BookInstance.find({
+                'book': req.body.id
+            }).exec(callback);
+        },
+    }, function (err, results) {
         if (err) {
             return next(err);
         }
-        // Success, so redirect to list of BookInstance items.
-        res.redirect('/catalog/book');
+        // Success
+        if (results.book_bookinstances.length > 0) {
+            // Book has book_instances. Render in same way as for GET route.
+            res.render('book_delete', {
+                title: 'Delete Book',
+                book: results.book,
+                book_instances: results.book_bookinstances
+            });
+            return;
+        } else {
+            // Book has no BookInstance objects. Delete object and redirect to the list of books.
+            Book.findByIdAndRemove(req.body.id, function deleteBook(err) {
+                if (err) {
+                    return next(err);
+                }
+                // Success - got to books list.
+                res.redirect('/catalog/books');
+            });
+
+        }
     });
 };
 
