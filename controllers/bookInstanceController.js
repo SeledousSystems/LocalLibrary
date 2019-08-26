@@ -2,10 +2,10 @@ var BookInstance = require('../models/bookinstance');
 const {
     body,
     validationResult
-} = require('express-validator/check');
+} = require('express-validator');
 const {
     sanitizeBody
-} = require('express-validator/filter');
+} = require('express-validator');
 var Book = require('../models/book');
 
 // Display list of all BookInstances.

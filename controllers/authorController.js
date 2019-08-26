@@ -4,10 +4,10 @@ var Book = require('../models/book')
 const {
     body,
     validationResult
-} = require('express-validator/check');
+} = require('express-validator');
 const {
     sanitizeBody
-} = require('express-validator/filter');
+} = require('express-validator');
 
 // Display list of all Authors.
 exports.author_list = function (req, res, next) {
